@@ -12,7 +12,7 @@ public class Breaker : MonoBehaviour
         foreach(ContactPoint2D contact in collision.contacts)
         {
             float dotProd = Vector2.Dot(collision.relativeVelocity, contact.normal);
-            if (dotProd < 0.1f)
+            if (dotProd < 10)
                 return;
         }
 

@@ -103,11 +103,14 @@ public class PlayerController : MonoBehaviour {
 
     public void CreateRock()
     {
+        if (!IsOnGround())
+            return;
         if (!isCreating)
             return;
 
         GameObject rock = Instantiate(rockPrefab, createPosition, Quaternion.Euler(0, 0, 0));
 
+        EffectManager.CreateRockCreateEffect(createPosition, Vector2.up);
         CameraController.Shake(0.3f);
     }
     public void CreateBoulder()
@@ -142,11 +145,17 @@ public class PlayerController : MonoBehaviour {
     public void FindInteractable(Vector2 input)
     {
         //Check for colliders in Circle
-        RaycastHit2D hit = Physics2D.CircleCast(transform.position, bendingRadius, input, 0, obstacleLayer);
-        if (!hit)
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, bendingRadius, input, bendingRadius, obstacleLayer);
+        if (hits.Length <=0)
             return;
         //Check for interact
-        Interactable interact = hit.transform.gameObject.GetComponent<Interactable>();
+        Interactable interact = null;
+        foreach (RaycastHit2D hit in hits)
+        {
+            interact = hit.transform.gameObject.GetComponent<Interactable>();
+            if (interact)
+                break;
+        }
         if (!interact)
             return;
         //Select
@@ -157,8 +166,6 @@ public class PlayerController : MonoBehaviour {
 
     public void Hit()
     {
-        if (!IsOnGround())
-            return;
         if (!interactable)
             FindInteractable(lastPotentAim);
         if (!interactable || isCreating)
@@ -175,9 +182,13 @@ public class PlayerController : MonoBehaviour {
         velocity += input.normalized * hitSpeed;
         interactable.rigidbody.velocity = velocity;
 
-        interactable.Unselect();
 
         CameraController.Shake(0.5f);
+        EffectManager.CreateRockHitEffect(interactable.transform.position, input);
+
+
+        interactable.Unselect();
+
     }
 
     public void SetSelection(Interactable interactable)
