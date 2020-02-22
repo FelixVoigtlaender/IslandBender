@@ -32,12 +32,6 @@ public class PlayerController : MonoBehaviour {
     [Header("Bending")]
     public float bendingRadius = 4;
     public float hitSpeed = 20;
-    public float createSpeed = 5;
-    [Range(0,1f)]
-    public float creationRange = 0.5f;
-    public GameObject rockPrefab;
-    public GameObject boulderPrefab;
-    Vector2 createPosition = Vector2.zero;
     Interactable interactable;
 
 
@@ -45,8 +39,6 @@ public class PlayerController : MonoBehaviour {
     {
         controls = new InputMaster();
         controls.Player.Jump.performed += ctx => Jump();
-        controls.Player.Rock.performed += ctx => CreateRock();
-        controls.Player.Boulder.performed += ctx => CreateBoulder();
         controls.Player.Hit.performed += ctx => Hit();
     }
 
@@ -73,9 +65,7 @@ public class PlayerController : MonoBehaviour {
         isCreating = controls.Player.Create.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
         isInteracting = controls.Player.Interact.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
         isBending = isCreating || isInteracting;
-        //Create
-        if (isCreating)
-            Create(lastPotentAim);
+
         //Interact
         if (isInteracting)
             Interact(aim);
@@ -86,43 +76,6 @@ public class PlayerController : MonoBehaviour {
         movement = isBending ? Vector2.zero : movement;
         Move(movement);
     }
-    //
-    //Bending
-    //
-    public void Create(Vector2 input)
-    {
-        //Check for Spawnplace
-        Vector2 rayPostion = (Vector2)transform.position + Mathf.Sign(input.x) * bendingRadius * Vector2.right*creationRange;
-        RaycastHit2D hit = Physics2D.Raycast(rayPostion, Vector2.down,10,obstacleLayer);
-        if (!hit)
-            return;
-        //Draw Spawn place
-        createPosition = hit.point;
-        Debug.DrawLine(createPosition, createPosition + Vector2.up);
-    }
-
-    public void CreateRock()
-    {
-        if (!IsOnGround())
-            return;
-        if (!isCreating)
-            return;
-
-        GameObject rock = Instantiate(rockPrefab, createPosition, Quaternion.Euler(0, 0, 0));
-
-        EffectManager.CreateRockCreateEffect(createPosition, Vector2.up);
-        CameraController.Shake(0.3f);
-    }
-    public void CreateBoulder()
-    {
-        if (!isCreating)
-            return;
-
-        GameObject boulder = Instantiate(boulderPrefab, createPosition, Quaternion.Euler(0, 0, 0));
-
-        CameraController.Shake(0.4f);
-    }
-
     public void Interact(Vector2 input)
     {
         FindInteractable(input);
@@ -275,7 +228,6 @@ public class PlayerController : MonoBehaviour {
         Gizmos.color = color;
 
         Gizmos.DrawWireSphere(transform.position, bendingRadius);
-        Gizmos.DrawWireSphere(transform.position, bendingRadius*creationRange);
         if (interactable)
         {
             Gizmos.DrawWireCube(transform.position, Vector3.one);

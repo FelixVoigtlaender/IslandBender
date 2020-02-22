@@ -17,6 +17,30 @@ public class Boulder : MonoBehaviour
 
         transform.position = startPos;
     }
+    private void Start()
+    {
+
+        Collider2D mycollider = GetComponent<Collider2D>(); int numColliders = 10;
+        Collider2D[] colliders = new Collider2D[numColliders];
+        ContactFilter2D contactFilter = new ContactFilter2D();
+        mycollider.OverlapCollider(contactFilter, colliders);
+        foreach(Collider2D collider in colliders)
+        {
+            if (collider)
+            {
+                Physics2D.IgnoreCollision(mycollider, collider);
+                transform.parent = collider.transform;
+                break;
+            }
+        }
+
+
+        //Physics.IgnoreCollision(bullet.GetComponent<Collider>(), GetComponent<Collider>());
+    }
+
+    
+
+
     private void Update()
     {
         float percent = ((Vector2)transform.position - startPos).magnitude / (endPos - startPos).magnitude;
@@ -25,7 +49,6 @@ public class Boulder : MonoBehaviour
         {
             rigidbody.velocity = Vector2.zero;
             transform.position = endPos;
-            Destroy(this);
             return;
         }
 
@@ -33,15 +56,6 @@ public class Boulder : MonoBehaviour
         Vector2 velocity = up * speed;
         rigidbody.velocity = velocity;
     }
-    private void Start()
-    {
-
-        //Add Velocity up
-        Vector2 up = transform.TransformDirection(Vector2.up).normalized;
-        Vector2 velocity = up * speed;
-        rigidbody.velocity = velocity;
-    }
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;

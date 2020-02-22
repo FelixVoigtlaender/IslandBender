@@ -41,5 +41,7 @@ public class Breaker : MonoBehaviour
     public void Break()
     {
         Destroy(gameObject);
+
+        EffectManager.CreateRockHitEffect(transform.position, Vector2.up);
     }
 }
