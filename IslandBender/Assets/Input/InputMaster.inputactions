@@ -38,7 +38,7 @@
                     "interactions": "Hold"
                 },
                 {
-                    "name": "Interact",
+                    "name": "Manipulate",
                     "type": "PassThrough",
                     "id": "72c3b0f4-57b9-46e1-8c5c-641027bcfb84",
                     "expectedControlType": "",
@@ -254,7 +254,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Interact",
+                    "action": "Manipulate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

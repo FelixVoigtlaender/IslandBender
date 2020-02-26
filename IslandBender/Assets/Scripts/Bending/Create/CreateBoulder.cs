@@ -15,6 +15,7 @@ public class CreateBoulder : MonoBehaviour
 
     Create create;
     PlayerController player;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,7 +35,9 @@ public class CreateBoulder : MonoBehaviour
         var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90;
 
         //Create
-        GameObject boulder = Instantiate(boulderPrefab, create.createPosition, Quaternion.Euler(0, 0, angle));
+        GameObject boulderObj = Instantiate(boulderPrefab, create.createPosition, Quaternion.Euler(0, 0, angle));
+        Boulder boulder = boulderObj.GetComponent<Boulder>();
+        boulder.Setup(create.createCollider,dir);
 
         //Effects
         //EffectManager.CreateBoulderCreateEffect(create.createPosition, Vector2.up);

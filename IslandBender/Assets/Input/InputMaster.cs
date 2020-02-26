@@ -51,7 +51,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""interactions"": ""Hold""
                 },
                 {
-                    ""name"": ""Interact"",
+                    ""name"": ""Manipulate"",
                     ""type"": ""PassThrough"",
                     ""id"": ""72c3b0f4-57b9-46e1-8c5c-641027bcfb84"",
                     ""expectedControlType"": """",
@@ -267,7 +267,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Interact"",
+                    ""action"": ""Manipulate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -327,7 +327,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
         m_Player_Create = m_Player.FindAction("Create", throwIfNotFound: true);
-        m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_Manipulate = m_Player.FindAction("Manipulate", throwIfNotFound: true);
         m_Player_Rock = m_Player.FindAction("Rock", throwIfNotFound: true);
         m_Player_Hit = m_Player.FindAction("Hit", throwIfNotFound: true);
         m_Player_Boulder = m_Player.FindAction("Boulder", throwIfNotFound: true);
@@ -384,7 +384,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_Aim;
     private readonly InputAction m_Player_Create;
-    private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_Manipulate;
     private readonly InputAction m_Player_Rock;
     private readonly InputAction m_Player_Hit;
     private readonly InputAction m_Player_Boulder;
@@ -396,7 +396,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @Aim => m_Wrapper.m_Player_Aim;
         public InputAction @Create => m_Wrapper.m_Player_Create;
-        public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        public InputAction @Manipulate => m_Wrapper.m_Player_Manipulate;
         public InputAction @Rock => m_Wrapper.m_Player_Rock;
         public InputAction @Hit => m_Wrapper.m_Player_Hit;
         public InputAction @Boulder => m_Wrapper.m_Player_Boulder;
@@ -421,9 +421,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @Create.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCreate;
                 @Create.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCreate;
                 @Create.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCreate;
-                @Interact.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
-                @Interact.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
-                @Interact.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
+                @Manipulate.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnManipulate;
+                @Manipulate.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnManipulate;
+                @Manipulate.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnManipulate;
                 @Rock.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRock;
                 @Rock.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRock;
                 @Rock.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRock;
@@ -449,9 +449,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @Create.started += instance.OnCreate;
                 @Create.performed += instance.OnCreate;
                 @Create.canceled += instance.OnCreate;
-                @Interact.started += instance.OnInteract;
-                @Interact.performed += instance.OnInteract;
-                @Interact.canceled += instance.OnInteract;
+                @Manipulate.started += instance.OnManipulate;
+                @Manipulate.performed += instance.OnManipulate;
+                @Manipulate.canceled += instance.OnManipulate;
                 @Rock.started += instance.OnRock;
                 @Rock.performed += instance.OnRock;
                 @Rock.canceled += instance.OnRock;
@@ -489,7 +489,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnCreate(InputAction.CallbackContext context);
-        void OnInteract(InputAction.CallbackContext context);
+        void OnManipulate(InputAction.CallbackContext context);
         void OnRock(InputAction.CallbackContext context);
         void OnHit(InputAction.CallbackContext context);
         void OnBoulder(InputAction.CallbackContext context);

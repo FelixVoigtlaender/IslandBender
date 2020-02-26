@@ -11,16 +11,13 @@ public class PlayerController : MonoBehaviour {
     Vector2 lastPotentAim;
     Vector2 aim;
     Vector2 mov;
-    bool isCreating;
-    bool isInteracting;
-    bool isBending;
     [Header("Movement")]
     public float walkSpeed = 10;
     public float jumpSpeed = 10;
     public float deltaTimeSky = 0.5f;
     public float deltaTimeGround = 0.05f;
     public LayerMask obstacleLayer;
-    Rigidbody2D myRigid;
+    public Rigidbody2D myRigid;
     Vector2 smoothVelocity;
 
     [Header("Jumps")]
@@ -29,17 +26,11 @@ public class PlayerController : MonoBehaviour {
     public float jumpReload = 0.1f;
     public int maxSkyJumps = 1;
 
-    [Header("Bending")]
-    public float bendingRadius = 4;
-    public float hitSpeed = 20;
-    Interactable interactable;
-
 
     private void Awake()
     {
         controls = new InputMaster();
         controls.Player.Jump.performed += ctx => Jump();
-        controls.Player.Hit.performed += ctx => Hit();
     }
 
     private void Start()
@@ -47,10 +38,6 @@ public class PlayerController : MonoBehaviour {
         myRigid = GetComponent<Rigidbody2D>();
     }
 
-    public void OnDamage()
-    {
-        //playerInput.Vibrate(0.5f,0.3f);
-    }
 
     public void Update()
     {
@@ -62,91 +49,14 @@ public class PlayerController : MonoBehaviour {
         mov = controls.Player.Movement.ReadValue<Vector2>();
 
         //Bending
-        isCreating = controls.Player.Create.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
-        isInteracting = controls.Player.Interact.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
-        isBending = isCreating || isInteracting;
-
-        //Interact
-        if (isInteracting)
-            Interact(aim);
-        HasInteractable();
+        bool isManipulating = controls.Player.Manipulate.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
+        bool isCreating = controls.Player.Create.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
+        bool isBending = isManipulating || isCreating;
 
         //Movement
         Vector2 movement = mov;
-        movement = isBending ? Vector2.zero : movement;
+        movement = isBending ? Vector2.zero : mov;
         Move(movement);
-    }
-    public void Interact(Vector2 input)
-    {
-        FindInteractable(input);
-        if(interactable)
-            Debug.DrawLine((Vector2)interactable.transform.position + input.normalized*hitSpeed*0.1f, interactable.transform.position);
-    }
-
-    bool HasInteractable()
-    {
-        if (!interactable)
-            return false;
-        if((interactable.transform.position - transform.position).magnitude > bendingRadius)
-        {
-            interactable.Unselect();
-            return false;
-        }
-        return true;
-    }
-
-    public void FindInteractable(Vector2 input)
-    {
-        //Check for colliders in Circle
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, bendingRadius, input, bendingRadius, obstacleLayer);
-        if (hits.Length <=0)
-            return;
-        //Check for interact
-        Interactable interact = null;
-        foreach (RaycastHit2D hit in hits)
-        {
-            interact = hit.transform.gameObject.GetComponent<Interactable>();
-            if (interact)
-                break;
-        }
-        if (!interact)
-            return;
-        //Select
-        if (interactable)
-            interactable.Unselect();
-        interact.Select(this);
-    }
-
-    public void Hit()
-    {
-        if (!interactable)
-            FindInteractable(lastPotentAim);
-        if (!interactable || isCreating)
-            return;
-        if ((interactable.transform.position - transform.position).magnitude > bendingRadius)
-        {
-            interactable.Unselect();
-            return;
-        }
-
-        interactable.rigidbody.bodyType = RigidbodyType2D.Dynamic;
-        Vector2 input = aim;
-        Vector2 velocity = interactable.rigidbody.velocity;
-        velocity += input.normalized * hitSpeed;
-        interactable.rigidbody.velocity = velocity;
-
-
-        CameraController.Shake(0.5f);
-        EffectManager.CreateRockHitEffect(interactable.transform.position, input);
-
-
-        interactable.Unselect();
-
-    }
-
-    public void SetSelection(Interactable interactable)
-    {
-        this.interactable = interactable;
     }
 
     public void Move(Vector2 input)
@@ -216,21 +126,5 @@ public class PlayerController : MonoBehaviour {
     private void OnDisable()
     {
         controls.Disable();
-    }
-
-    private void OnDrawGizmos()
-    {
-        Color color = Color.black;
-        if (isCreating)
-            color += Color.green;
-        if (isInteracting)
-            color += Color.red;
-        Gizmos.color = color;
-
-        Gizmos.DrawWireSphere(transform.position, bendingRadius);
-        if (interactable)
-        {
-            Gizmos.DrawWireCube(transform.position, Vector3.one);
-        }
     }
 }

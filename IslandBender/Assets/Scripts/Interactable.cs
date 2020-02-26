@@ -28,11 +28,9 @@ public class Interactable : MonoBehaviour
 
         // Select
         this.selector = selector;
-        selector.SetSelection(this);
     }
     public void Unselect()
     {
-        selector.SetSelection(null);
         this.selector = null;
     }
 
