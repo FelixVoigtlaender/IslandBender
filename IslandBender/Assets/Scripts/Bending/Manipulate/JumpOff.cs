@@ -30,7 +30,7 @@ public class JumpOff : MonoBehaviour
 
         Vector2 aim = manipulate.lastPotentAim;
         Vector2 deltaVel = aim * speed;
-        Bending.AddVelocity(player.myRigid, deltaVel);
+        //Bending.AddVelocity(player.myRigid, deltaVel);
         Bending.AddVelocity(rigid, -deltaVel);
 
         EffectManager.CreateRockHitEffect(transform.position, deltaVel);
