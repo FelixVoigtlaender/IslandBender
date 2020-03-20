@@ -6,19 +6,24 @@ public class PlayerController : MonoBehaviour
 {
 
     [Header("Input")]
-    public InputMaster controls;
     public float deadZone = 0.2f;
     Vector2 lastPotentAim;
     Vector2 aim;
     Vector2 mov;
-    Player player;
+
+    [HideInInspector]
     public Rigidbody2D myRigid;
+    [HideInInspector]
+    public InputMaster controls;
+    [HideInInspector]
+    public Controller2D controller;
 
 
     private void Awake()
     {
         controls = new InputMaster();
 
+        print("START");
         //Jump
         controls.Player.Jump.performed += ctx => JumpStart();
         controls.Player.Jump.started += ctx => JumpStart();
@@ -28,7 +33,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         myRigid = GetComponent<Rigidbody2D>();
-        player = GetComponent<Player>();
+        controller = GetComponent<Controller2D>();
     }
 
 
@@ -49,17 +54,21 @@ public class PlayerController : MonoBehaviour
     }
     public void Move(Vector2 input)
     {
-        input = input.magnitude < deadZone ? Vector2.zero : input;
-        player.SetDirectionalInput(input);
+        if (input.magnitude < deadZone)
+            input = Vector2.zero;
+
+        controller.SetDirectionalInput(input);
     }
     public void JumpStart()
     {
-        player.OnJumpInputDown();
+        print("Jump");
+        controller.OnJumpStart();
     }
 
     public void JumpStop()
     {
-        player.OnJumpInputUp();
+        print("JumpEnd");
+        controller.OnJumpStop();
     }
     private void OnEnable()
     {
