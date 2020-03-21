@@ -29,6 +29,9 @@ public class Controller2D : RaycastController
     float jumpBuffer;
     bool isJumpBuffer;
 
+    public float coyoteTime = 0.2f;
+    float lastGroundedTime;
+
     public float minJumpCornerCorrectionSpeed = 2;
 
     Vector2 directionalInput;
@@ -55,7 +58,8 @@ public class Controller2D : RaycastController
         HandleWallSliding();
         HandleJumpBuffer();
         CheckJumpCornerCorrection();
-        CalculateVelocity();
+        HandleMovement();
+        HandleCoyoteTime();
         //Wall Sliding
     }
     //Input
@@ -73,25 +77,33 @@ public class Controller2D : RaycastController
             {
                 velocity.x = -wallDirX * wallJumpClimb.x;
                 velocity.y = wallJumpClimb.y;
+
+                print("WallJumpClimb");
             }
             else if (directionalInput.x <= 0.1f)
             {
                 velocity.x = -wallDirX * wallJumpOff.x;
                 velocity.y = wallJumpOff.y;
+                
+                print("wallJumpOff");
             }
             else
             {
                 velocity.x = -wallDirX * wallLeap.x;
                 velocity.y = wallLeap.y;
+
+                print("wallLeap");
             }
         }else 
-        if (collisions.below || HasFlag(collisions.bottomEdges))
+        if (collisions.below || HasFlag(collisions.bottomEdges) || Time.time - lastGroundedTime < coyoteTime)
         {
             if (collisions.slopeAngle > maxSlopeAngle)
             {
                 velocity.y = maxJumpVelocity * collisions.slopeNormal.y;
                 velocity.x = maxJumpVelocity * collisions.slopeNormal.x;
 
+
+                print("SlopeJump");
                 /*if (Mathf.Sign(directionalInput.x) != -Mathf.Sign(collisions.slopeNormal.x))
                 { // not jumping against max slope
                     velocity.y = maxJumpVelocity * collisions.slopeNormal.y;
@@ -114,7 +126,7 @@ public class Controller2D : RaycastController
     public void OnJumpStop()
     {
         Vector2 velocity = rigid.velocity;
-        if (velocity.y > minJumpVelocity)
+        if (velocity.y > minJumpVelocity && velocity.y <= maxJumpVelocity)
         {
             velocity.y = minJumpVelocity;
         }
@@ -127,7 +139,8 @@ public class Controller2D : RaycastController
         Vector2 velocity = rigid.velocity;
         wallDirX = collisions.leftWhiskers[horizontalRayCount - 1] ? -1 : 1;
         wallSliding = false;
-        if ((collisions.leftWhiskers[horizontalRayCount-1] || collisions.rightWhiskers[horizontalRayCount - 1]) && !collisions.below && velocity.y < 0)
+        int leftRightWhiskerCount = FlagCount(collisions.leftWhiskers) + FlagCount(collisions.rightWhiskers);
+        if (leftRightWhiskerCount >=2 && !collisions.below && velocity.y < 0)
         {
             wallSliding = true;
 
@@ -169,20 +182,25 @@ public class Controller2D : RaycastController
             return;
 
         float rayLength = 0.1f + skinWidth;
-        float minSlip = 0.1f;
+        float minSlip = skinWidth + 0.02f;
         //Right Slip
         if (collisions.topWhiskers[0] || collisions.topEdges[0])
         {
             Vector2 rayOrigin = raycastOrigins.topLeft + Vector2.right * verticalRaySpacing + Vector2.up * rayLength;
-            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.left , verticalRaySpacing, collisionMask);
+            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.left, verticalRaySpacing, collisionMask);
+
+            Color debugColor = Color.red;
             if (hit)
             {
-                rigid.MovePosition(rigid.position + Vector2.right * (minSlip + hit.distance));
+                float slipDistance = minSlip + (verticalRaySpacing - hit.distance);
+                rigid.MovePosition(rigid.position + Vector2.right * (slipDistance));
+                debugColor = Color.green;
             }
             else
             {
                 rigid.MovePosition(rigid.position + Vector2.right * minSlip);
             }
+            Debug.DrawRay(rayOrigin, Vector2.left * verticalRaySpacing, debugColor);
         }
             
         //Left Slip
@@ -190,14 +208,19 @@ public class Controller2D : RaycastController
         {
             Vector2 rayOrigin = raycastOrigins.topRight + Vector2.left * verticalRaySpacing + Vector2.up * rayLength;
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right, verticalRaySpacing, collisionMask);
+
+            Color debugColor = Color.red;
             if (hit)
             {
-                rigid.MovePosition(rigid.position + Vector2.left * (minSlip + hit.distance));
+                float slipDistance = minSlip + (verticalRaySpacing - hit.distance);
+                rigid.MovePosition(rigid.position + Vector2.left * (slipDistance));
+                debugColor = Color.green;
             }
             else
             {
                 rigid.MovePosition(rigid.position + Vector2.left * minSlip);
             }
+            Debug.DrawRay(rayOrigin, Vector2.right * verticalRaySpacing, debugColor);
         }
     }
     public void HandleJumpBuffer()
@@ -213,12 +236,56 @@ public class Controller2D : RaycastController
             OnJumpStart();
         }
     }
-    public void CalculateVelocity()
+    public void HandleMovement()
     {
+        Debug.DrawRay(Vector2.one, collisions.slopeNormal, Color.green);
+
         Vector2 velocity = rigid.velocity;
-        float targetVelocityX = directionalInput.x * moveSpeed;
-        velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, collisions.below ? accelerationTimeGrounded : accelerationTimeAirborne);
+        float xDir = Mathf.Sign(velocity.x);
+        float xDirTarget = Mathf.Sign(directionalInput.x);
+
+        float targetSpeed = moveSpeed;
+
+        if (!collisions.below || wallSliding || velocity.y > Mathf.Abs(velocity.x))
+        {
+            //In Air, wallsliding or jumping.
+            velocity.x = Mathf.SmoothDamp(velocity.x, targetSpeed * directionalInput.x, ref velocityXSmoothing, accelerationTimeAirborne);
+        }
+        else
+        {
+            //Sliding
+            if (collisions.slopeAngle > maxSlopeAngle)
+                return;
+
+
+            //Grounded / Ascending / Descending
+            // normalVelocity= velocity parallel to normal of slope
+            // parallelVelocity = velocity parallel to slope
+            // lostSpeed = Speed lost when landing on ground (Vertical movement is removed)
+            Vector2 normalVelocity = Vector2.Dot(collisions.slopeNormal.normalized, velocity) * collisions.slopeNormal.normalized;
+            Vector2 parallelVelocity = velocity - normalVelocity;
+            float lostSpeed = normalVelocity.magnitude;
+            float parallelSpeed = parallelVelocity.magnitude;
+            velocity = parallelVelocity;
+
+            // newSpeed = Speed parallel to ground, (neg/pos) for going left&right 
+            float newSpeed = Mathf.SmoothDamp(parallelSpeed * xDir, targetSpeed * directionalInput.x, ref velocityXSmoothing, accelerationTimeGrounded);
+
+            //Landing roll. Keep some of the lostSpeed by doing a landing roll
+            newSpeed += lostSpeed * directionalInput.x;
+            float maxSpeedMagnitude = 2;
+            newSpeed = Mathf.Clamp(newSpeed, -targetSpeed* maxSpeedMagnitude, targetSpeed * maxSpeedMagnitude);
+
+            // newSpeed is transfered to velocity, which is parallel to ground
+            float yDir = Mathf.Sign(newSpeed) == Mathf.Sign(collisions.slopeNormal.x) ? -1 : 1;
+            velocity.x = Mathf.Cos(collisions.slopeAngle * Mathf.Deg2Rad) * newSpeed;
+            velocity.y = Mathf.Sin(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(newSpeed) * yDir;
+        }
         rigid.velocity = velocity;
     }
-
+    public void HandleCoyoteTime()
+    {
+        if (collisions.below)
+            lastGroundedTime = Time.time;
+    }
 }

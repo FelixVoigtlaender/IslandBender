@@ -50,6 +50,10 @@ public class RaycastController : MonoBehaviour
     {
         collisions.Reset();
 
+        //Edges
+        collisions.topEdges = EdgeCollisions(velocity, 1);
+        collisions.bottomEdges = EdgeCollisions(velocity, -1);
+
         //Vertical
         collisions.bottomWhiskers = VerticalCollisions(velocity, -1);
         collisions.topWhiskers = VerticalCollisions(velocity, 1);
@@ -62,9 +66,6 @@ public class RaycastController : MonoBehaviour
         collisions.left = HasFlag(collisions.leftWhiskers);
         collisions.right = HasFlag(collisions.rightWhiskers);
 
-        //Edges
-        collisions.topEdges = EdgeCollisions(velocity, 1);
-        collisions.bottomEdges = EdgeCollisions(velocity, -1);
 
     }
 

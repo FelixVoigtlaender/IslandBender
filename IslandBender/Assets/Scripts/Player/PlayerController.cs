@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Controller2D))]
 public class PlayerController : MonoBehaviour
 {
 
@@ -61,13 +62,11 @@ public class PlayerController : MonoBehaviour
     }
     public void JumpStart()
     {
-        print("Jump");
         controller.OnJumpStart();
     }
 
     public void JumpStop()
     {
-        print("JumpEnd");
         controller.OnJumpStop();
     }
     private void OnEnable()
