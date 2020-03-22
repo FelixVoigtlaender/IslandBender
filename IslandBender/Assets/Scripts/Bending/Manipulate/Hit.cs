@@ -16,7 +16,23 @@ public class Hit : MonoBehaviour
 
         player.controls.Player.Hit.performed += ctx => Perform();
     }
+    void Perform()
+    {
+        if (!manipulate.isManipulating)
+            return;
 
+        Vector2 dir = player.lastPotentAim;
+        Rigidbody2D otherRigid = manipulate.FindManipulateable(dir);
+
+        if (!otherRigid)
+            return;
+
+        Vector2 velocity = otherRigid.velocity;
+        velocity += dir * speed;
+        otherRigid.velocity = velocity;
+
+    }
+    /*
     void Perform()
     {
         if (!manipulate.canManipulate)
@@ -36,5 +52,6 @@ public class Hit : MonoBehaviour
         rigid.velocity = velocity;
         
     }
+    */
 
 }

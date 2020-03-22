@@ -8,9 +8,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("Input")]
     public float deadZone = 0.2f;
-    Vector2 lastPotentAim;
-    Vector2 aim;
-    Vector2 mov;
+    public Vector2 lastPotentAim;
+    public Vector2 aim;
+    public Vector2 mov;
 
     [HideInInspector]
     public Rigidbody2D myRigid;
@@ -48,6 +48,8 @@ public class PlayerController : MonoBehaviour
         //Input
         mov = controls.Player.Movement.ReadValue<Vector2>();
         aim = controls.Player.Aim.ReadValue<Vector2>();
+        if (aim.magnitude > deadZone)
+            lastPotentAim = aim;
 
         Move(mov);
 
@@ -77,5 +79,11 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         controls.Disable();
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.black;
+        Gizmos.DrawRay(transform.position, lastPotentAim.normalized*10);
     }
 }

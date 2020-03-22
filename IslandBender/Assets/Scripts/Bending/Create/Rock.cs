@@ -10,11 +10,5 @@ public class Rock : MonoBehaviour
     private void Start()
     {
         rigidbody = GetComponent<Rigidbody2D>();
-
-        //Add Velocity up
-        Vector2 velocity = rigidbody.velocity;
-        Vector2 up = transform.TransformDirection(Vector2.up).normalized;
-        velocity += up * speed;
-        rigidbody.velocity = velocity;
     }
 }

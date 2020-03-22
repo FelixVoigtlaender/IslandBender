@@ -6,14 +6,14 @@ using UnityEngine;
 public class Manipulate : MonoBehaviour
 {
     Color color = Color.red;
-    public float manipulateRadius = 5;
-    public LayerMask manipulateLayer;
+    public float radius = 5;
+
+    public LayerMask layerMask;
     public bool isManipulating;
-    public bool canManipulate = false;
 
     PlayerController player;
-    public Vector2 aim, mov, lastPotentAim;
-    public Collider2D manipulateCollider;
+
+    public Rigidbody2D[] manipulateables;
     // Manager for all actions for Creation
     private void Start()
     {
@@ -22,73 +22,81 @@ public class Manipulate : MonoBehaviour
 
     private void Update()
     {
-        //Input
-        aim = player.controls.Player.Aim.ReadValue<Vector2>();
-        lastPotentAim = aim.magnitude > 0.1f ? aim : lastPotentAim;
-        mov = player.controls.Player.Movement.ReadValue<Vector2>();
         isManipulating = player.controls.Player.Manipulate.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
-
-        //Creating
-        canManipulate = isManipulating;
-        if (isManipulating)
-            Creating(lastPotentAim);
     }
 
-
-    public void Creating(Vector2 input)
+    private void FixedUpdate()
     {
-        input = input.normalized;
-        int sections = 10;
-        float deltaAngle = 360 / (sections);
+        manipulateables = FindManipulateables();
+    }
 
-        //Find Collision in Radius with Circular raycasts
-        Vector2 rod = input * manipulateRadius;
-        RaycastHit2D hit;
-        for (int i = 0; i < sections; i++)
+    //Finds all Manipulateables (Rigidbody2D) in its manipulateRadius.
+    public Rigidbody2D[] FindManipulateables()
+    {
+        if (!isManipulating)
+            return new Rigidbody2D[0];
+
+        List<Rigidbody2D> manipulateables = new List<Rigidbody2D>();
+
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, radius, layerMask);
+        foreach(Collider2D c in colliders)
         {
-            float angle = deltaAngle * i;
-
-            //right
-            Vector2 dir = RotateVector(rod, angle);
-            hit = Physics2D.Raycast((Vector2)transform.position, dir, dir.magnitude, manipulateLayer);
-            Debug.DrawRay(transform.position, dir, color);
-            //left
-            if (!hit)
-            {
-                dir = RotateVector(rod, -angle);
-                hit = Physics2D.Raycast((Vector2)transform.position, dir, dir.magnitude, manipulateLayer);
-
-                Debug.DrawRay(transform.position, dir,color);
-            }
-
-
-            if (hit)
-            {
-                manipulateCollider = hit.collider;
-                return;
-            }
+            if (c.attachedRigidbody)
+                manipulateables.Add(c.attachedRigidbody);
         }
 
-
-        canManipulate = false;
+        return manipulateables.ToArray();
     }
 
-    public static Vector2 RotateVector(Vector2 v, float degrees)
+    //Finds closest manipulateable relative to an direction
+    public Rigidbody2D FindManipulateable(Vector2 dir, float maxMass = 1000)
     {
-        float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
-        float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
+        if (!isManipulating)
+            return null;
 
-        float tx = v.x;
-        float ty = v.y;
-        v.x = (cos * tx) - (sin * ty);
-        v.y = (sin * tx) + (cos * ty);
-        return v;
+        Vector2 myPosition = (Vector2)transform.position + dir * radius;
+
+        Rigidbody2D closest = null;
+        float closestDistance = radius*2 + 10;
+        foreach (Rigidbody2D r in manipulateables)
+        {
+            float distance = ((Vector2)myPosition - r.position).magnitude;
+            if (distance < closestDistance && r.mass < maxMass)
+            {
+                closest = r;
+                closestDistance = distance;
+            }
+        }
+        return closest;
+    }
+
+    public Rigidbody2D FindClosestManipulateable(float maxMass = 1000)
+    {
+        if (!isManipulating)
+            return null;
+
+        Rigidbody2D closest = null;
+        float closestDistance = radius+10;
+        foreach(Rigidbody2D r in manipulateables)
+        {
+            float distance = ((Vector2)transform.position - r.position).magnitude;
+            if(distance < closestDistance && r.mass < maxMass)
+            {
+                closest = r;
+                closestDistance = distance;
+            }
+        }
+        return closest;
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = color;
-        Gizmos.DrawWireSphere(transform.position, manipulateRadius);
+        Gizmos.DrawWireSphere(transform.position, radius);
+
+        if(manipulateables != null)
+            foreach (Rigidbody2D r in manipulateables)
+                Gizmos.DrawWireSphere(r.position, 1);
 
     }
 

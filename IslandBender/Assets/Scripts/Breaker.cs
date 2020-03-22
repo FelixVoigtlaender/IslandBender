@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Breaker : MonoBehaviour
 {
+    public float minSpeed = 50;
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.relativeVelocity.magnitude < 10)
+        if (collision.relativeVelocity.magnitude < minSpeed)
             return;
         //if(collision.)
         foreach(ContactPoint2D contact in collision.contacts)
