@@ -3,25 +3,20 @@ using System.Collections;
 
 
 [RequireComponent(typeof(Manipulate))]
-public class JumpOff : MonoBehaviour
+public class JumpOff : Manipulator
 {
     public float jumpHeight = 5;
     float jumpSpeed;
-    Manipulate manipulate;
-    PlayerController player;
 
     private void Start()
     {
-        manipulate = GetComponent<Manipulate>();
-        player = GetComponent<PlayerController>();
-
         float gravity = -Physics2D.gravity.y;
         jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(gravity) * jumpHeight);
 
-        player.controls.Player.Jump.performed += ctx => Perform();
+        player.controls.Player.Jump.performed += ctx => TryPerform();
     }
 
-    public void Perform()
+    public override void Perform()
     {
         if (!manipulate.isManipulating)
             return;
@@ -34,6 +29,7 @@ public class JumpOff : MonoBehaviour
 
         Vector2 aim = player.lastPotentAim.normalized;
         Vector2 deltaVel = aim * jumpSpeed;
+        player.myRigid.velocity = Vector2.zero;
         Bending.AddVelocity(player.myRigid, deltaVel);
         Bending.AddVelocity(otherRigid, -deltaVel);
 

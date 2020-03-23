@@ -61,6 +61,7 @@ public class Manipulate : MonoBehaviour
         foreach (Rigidbody2D r in manipulateables)
         {
             float distance = ((Vector2)myPosition - r.position).magnitude;
+            distance += ((Vector2)transform.position - r.position).magnitude * 2;
             if (distance < closestDistance && r.mass < maxMass)
             {
                 closest = r;
@@ -96,7 +97,8 @@ public class Manipulate : MonoBehaviour
 
         if(manipulateables != null)
             foreach (Rigidbody2D r in manipulateables)
-                Gizmos.DrawWireSphere(r.position, 1);
+                if(r)
+                    Gizmos.DrawWireSphere(r.position, 1);
 
     }
 

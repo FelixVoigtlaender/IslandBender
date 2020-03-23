@@ -17,6 +17,9 @@ GameObject:
   - component: {fileID: 388228688}
   - component: {fileID: 388228689}
   - component: {fileID: 388228690}
+  - component: {fileID: 1761450676}
+  - component: {fileID: 1761450685}
+  - component: {fileID: 1761450686}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -101,6 +104,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deadZone: 0.2
+  lastPotentAim: {x: 0, y: 0}
+  aim: {x: 0, y: 0}
+  mov: {x: 0, y: 0}
   myRigid: {fileID: 0}
   controller: {fileID: 0}
 --- !u!50 &832123106838563032
@@ -194,7 +200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd720d81b1ccc8c44b1d27895eaca975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpHeight: 5
+  jumpHeight: 4
   rockPrefab: {fileID: 1046366324474681324, guid: bc3e07b622741aa41bfc0d43e5f30d51,
     type: 3}
 --- !u!114 &388228689
@@ -230,3 +236,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bab9f24a4c6777a47a6eee4c3ee5b4b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1761450676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832123106838563029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a71905383a283428edd680a8b942c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpHeight: 10
+--- !u!114 &1761450685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832123106838563029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86fddc7e6390252438ae05808ef81723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 50
+  maxMass: 10
+--- !u!114 &1761450686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832123106838563029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5f517819c63df5438f0513b58903adc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 5
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 1280
+  isManipulating: 0
+  manipulateables: []

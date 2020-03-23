@@ -81,6 +81,14 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Break"",
+                    ""type"": ""Button"",
+                    ""id"": ""84f4c8ba-6039-4f63-a25f-eb5e56d0b77d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -292,6 +300,17 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""action"": ""Boulder"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3a6d4c0d-8856-40aa-a421-545fed23f6ae"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Break"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -331,6 +350,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_Player_Rock = m_Player.FindAction("Rock", throwIfNotFound: true);
         m_Player_Hit = m_Player.FindAction("Hit", throwIfNotFound: true);
         m_Player_Boulder = m_Player.FindAction("Boulder", throwIfNotFound: true);
+        m_Player_Break = m_Player.FindAction("Break", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -388,6 +408,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Rock;
     private readonly InputAction m_Player_Hit;
     private readonly InputAction m_Player_Boulder;
+    private readonly InputAction m_Player_Break;
     public struct PlayerActions
     {
         private @InputMaster m_Wrapper;
@@ -400,6 +421,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         public InputAction @Rock => m_Wrapper.m_Player_Rock;
         public InputAction @Hit => m_Wrapper.m_Player_Hit;
         public InputAction @Boulder => m_Wrapper.m_Player_Boulder;
+        public InputAction @Break => m_Wrapper.m_Player_Break;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -433,6 +455,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @Boulder.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBoulder;
                 @Boulder.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBoulder;
                 @Boulder.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBoulder;
+                @Break.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBreak;
+                @Break.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBreak;
+                @Break.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBreak;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -461,6 +486,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @Boulder.started += instance.OnBoulder;
                 @Boulder.performed += instance.OnBoulder;
                 @Boulder.canceled += instance.OnBoulder;
+                @Break.started += instance.OnBreak;
+                @Break.performed += instance.OnBreak;
+                @Break.canceled += instance.OnBreak;
             }
         }
     }
@@ -493,5 +521,6 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnRock(InputAction.CallbackContext context);
         void OnHit(InputAction.CallbackContext context);
         void OnBoulder(InputAction.CallbackContext context);
+        void OnBreak(InputAction.CallbackContext context);
     }
 }
