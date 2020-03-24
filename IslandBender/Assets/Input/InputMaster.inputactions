@@ -76,6 +76,14 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Redirect",
+                    "type": "Button",
+                    "id": "ccb0ff7f-bae6-404b-b9b4-20b504e8aaf3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -296,6 +304,17 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Break",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7de3c12c-0557-4661-8a91-a687fcc41cb1",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Redirect",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

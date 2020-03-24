@@ -10,8 +10,9 @@ public class Redirect : Manipulator
 
     private void Start()
     {
-        player.controls.Player.Hit.started += ctx => TryPerform();
-        player.controls.Player.Hit.canceled += ctx => TryPerform();
+        player.controls.Player.Redirect.started += ctx => TryPerform();
+        player.controls.Player.Redirect.performed += ctx => TryPerform();
+        player.controls.Player.Redirect.canceled += ctx => Cancel();
     }
 
     private void Update()
@@ -27,21 +28,34 @@ public class Redirect : Manipulator
         }
 
         Vector2 myPos = transform.position;
-        //selPos = SelectedPosition
         Vector2 selPos = selection.position;
-        float distance = (selPos - myPos).magnitude;
 
         //If out of reach... Let go
-        if(distance > manipulate.radius)
+        float distance = Vector2.Distance(myPos,selPos);
+        if (distance > manipulate.radius)
         {
             selection = null;
             return;
         }
 
-        //
-        //Actual Redirection
-        //
+        // Check if its getting closer or further?
+        Vector2 nextMyPos = myPos + player.myRigid.velocity * Time.deltaTime;
+        Vector2 nextSelPos = selPos + selection.velocity * Time.deltaTime;
+        float nextdistance = Vector2.Distance(nextMyPos,nextSelPos);
+        // If getting closer, do nothing
+        if (nextdistance < distance)
+            return;
+
+        //Redirect
         Vector2 dir = (selPos - myPos).normalized;
+        Vector2 tangent = Vector2.Perpendicular(dir).normalized;
+        Vector2 velocity = selection.velocity;
+        float tangentDir = Mathf.Sign(Vector2.Dot(tangent, velocity));
+
+        velocity = tangent * tangentDir * velocity.magnitude;
+        selection.velocity = velocity;
+
+        Debug.DrawRay(selection.position, velocity);
 
 
     }
@@ -65,6 +79,10 @@ public class Redirect : Manipulator
         if (velocity.magnitude < launchSpeed)
             velocity = velocity.normalized * launchSpeed;
         selection.velocity = velocity;
+        
+        EffectManager.CreateRockHitEffect(selection.position, velocity.normalized);
+
+        selection = null;
 
     }
 

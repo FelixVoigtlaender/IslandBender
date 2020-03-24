@@ -89,6 +89,14 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Redirect"",
+                    ""type"": ""Button"",
+                    ""id"": ""ccb0ff7f-bae6-404b-b9b4-20b504e8aaf3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -311,6 +319,17 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""action"": ""Break"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7de3c12c-0557-4661-8a91-a687fcc41cb1"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Redirect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -351,6 +370,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_Player_Hit = m_Player.FindAction("Hit", throwIfNotFound: true);
         m_Player_Boulder = m_Player.FindAction("Boulder", throwIfNotFound: true);
         m_Player_Break = m_Player.FindAction("Break", throwIfNotFound: true);
+        m_Player_Redirect = m_Player.FindAction("Redirect", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -409,6 +429,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Hit;
     private readonly InputAction m_Player_Boulder;
     private readonly InputAction m_Player_Break;
+    private readonly InputAction m_Player_Redirect;
     public struct PlayerActions
     {
         private @InputMaster m_Wrapper;
@@ -422,6 +443,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         public InputAction @Hit => m_Wrapper.m_Player_Hit;
         public InputAction @Boulder => m_Wrapper.m_Player_Boulder;
         public InputAction @Break => m_Wrapper.m_Player_Break;
+        public InputAction @Redirect => m_Wrapper.m_Player_Redirect;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -458,6 +480,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @Break.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBreak;
                 @Break.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBreak;
                 @Break.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBreak;
+                @Redirect.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRedirect;
+                @Redirect.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRedirect;
+                @Redirect.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRedirect;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -489,6 +514,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @Break.started += instance.OnBreak;
                 @Break.performed += instance.OnBreak;
                 @Break.canceled += instance.OnBreak;
+                @Redirect.started += instance.OnRedirect;
+                @Redirect.performed += instance.OnRedirect;
+                @Redirect.canceled += instance.OnRedirect;
             }
         }
     }
@@ -522,5 +550,6 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnHit(InputAction.CallbackContext context);
         void OnBoulder(InputAction.CallbackContext context);
         void OnBreak(InputAction.CallbackContext context);
+        void OnRedirect(InputAction.CallbackContext context);
     }
 }

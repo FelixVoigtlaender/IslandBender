@@ -27,6 +27,7 @@ public class Hit : Manipulator
         velocity += dir * speed;
         otherRigid.velocity = velocity;
 
+        EffectManager.CreateRockHitEffect(otherRigid.position, dir);
     } 
 
 }
