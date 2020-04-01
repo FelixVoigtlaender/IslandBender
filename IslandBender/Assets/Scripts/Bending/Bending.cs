@@ -99,6 +99,9 @@ public class Bending : MonoBehaviour
 
     public static void AddVelocity(Rigidbody2D rigid, Vector2 deltaVel)
     {
+
+        rigid.gameObject.SendMessage("Hit",SendMessageOptions.DontRequireReceiver);
+
         Vector2 velocity = rigid.velocity;
         velocity += deltaVel;
         rigid.velocity = velocity;

@@ -13,8 +13,14 @@ public class Break : Manipulator
     public override void Perform()
     {
         Vector2 dir = player.lastPotentAim;
-        Rigidbody2D otherRigid = manipulate.FindManipulateable(dir);
-        if(otherRigid && otherRigid.mass <= maxMass)
+
+        Manipulable manipulable = manipulate.FindManipulateable(dir);
+
+        if (!manipulable)
+            return;
+
+        Rigidbody2D otherRigid = manipulable.rigid;
+        if (otherRigid && (otherRigid.mass <= maxMass || otherRigid.bodyType == RigidbodyType2D.Kinematic))
             otherRigid.gameObject.SendMessage("Break");
     }
 }

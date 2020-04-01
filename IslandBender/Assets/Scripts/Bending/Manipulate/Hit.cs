@@ -18,11 +18,14 @@ public class Hit : Manipulator
             return;
 
         Vector2 dir = player.lastPotentAim;
-        Rigidbody2D otherRigid = manipulate.FindManipulateable(dir);
+        Manipulable manipulable = manipulate.FindManipulateable(dir);
 
-        if (!otherRigid)
+        if (!manipulable)
             return;
 
+        Rigidbody2D otherRigid = manipulable.rigid;
+
+        otherRigid.SendMessage("Hit", SendMessageOptions.DontRequireReceiver);
         Vector2 velocity = otherRigid.velocity;
         velocity += dir * speed;
         otherRigid.velocity = velocity;

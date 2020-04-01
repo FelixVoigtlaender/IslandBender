@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Controller2D))]
 public class PlayerController : MonoBehaviour
 {
+    [HideInInspector]
+    public Color color;
 
     [Header("Input")]
     public float deadZone = 0.2f;
@@ -18,11 +20,21 @@ public class PlayerController : MonoBehaviour
     public InputMaster controls;
     [HideInInspector]
     public Controller2D controller;
+    [HideInInspector]
+    public Create create;
+    [HideInInspector]
+    public Manipulate manipulate;
+
 
 
     private void Awake()
     {
         controls = new InputMaster();
+
+        create = GetComponent<Create>();
+        manipulate = GetComponent<Manipulate>();
+
+        color = GetComponent<SpriteRenderer>().color;
 
         print("START");
         //Jump
@@ -41,9 +53,7 @@ public class PlayerController : MonoBehaviour
     public void Update()
     {
         //Bending
-        bool isManipulating = controls.Player.Manipulate.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
-        bool isCreating = controls.Player.Create.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
-        bool isBending = isManipulating || isCreating;
+        bool isBending = create.isCreating || manipulate.isManipulating;
 
         //Input
         mov = controls.Player.Movement.ReadValue<Vector2>();
@@ -51,7 +61,10 @@ public class PlayerController : MonoBehaviour
         if (aim.magnitude > deadZone)
             lastPotentAim = aim;
 
-        Move(mov);
+        //Don't move once bending
+        Vector2 movInput = isBending ? Vector2.zero : mov;
+
+        Move(movInput);
 
 
     }

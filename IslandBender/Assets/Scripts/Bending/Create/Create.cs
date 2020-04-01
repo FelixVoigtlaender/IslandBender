@@ -11,9 +11,10 @@ public class Create : MonoBehaviour
     public bool canCreate = false;
 
     PlayerController player;
-    Vector2 aim, mov, lastPotentAim;
-    public Vector2 createPosition, createDir;
-    public Collider2D createCollider;
+    [HideInInspector]
+    public Vector2 position, goalPosition, dir, smoothVelocity;
+    public Creatable creatable;
+    
     // Manager for all actions for Creation
     private void Start()
     {
@@ -22,16 +23,24 @@ public class Create : MonoBehaviour
 
     private void Update()
     {
-        //Input
-        aim = player.controls.Player.Aim.ReadValue<Vector2>();
-        lastPotentAim = aim.magnitude > 0.1f ? aim : lastPotentAim;
-        mov = player.controls.Player.Movement.ReadValue<Vector2>();
         isCreating = player.controls.Player.Create.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
 
-        //Creating
-        canCreate = (createPosition - (Vector2)transform.position).magnitude < createRadius + 0.1f && isCreating;
+        //Unselect creatable if not creating
+        if (!isCreating && creatable)
+        {
+            creatable.UnSelect();
+            creatable = null;
+        }
+
+        position = Vector2.SmoothDamp(position, goalPosition, ref smoothVelocity, 0.1f);
+    }
+
+    private void FixedUpdate()
+    {
         if (isCreating)
-            Creating(lastPotentAim);
+            Creating(player.lastPotentAim);
+
+        canCreate = (position - (Vector2)transform.position).magnitude < createRadius + 0.1f && isCreating;
     }
 
     public void Creating(Vector2 input)
@@ -75,17 +84,41 @@ public class Create : MonoBehaviour
                     //Debug.DrawRay((Vector2)transform.position + dir, orthDir);
                 }
             }
+            // Impossible to spawn rigids on dynamic rigids...
+            if (hit && hit.rigidbody && hit.rigidbody.bodyType == RigidbodyType2D.Dynamic)
+                continue;
 
-            if (hit)
+            //Found hit and its a creatable (Can spawn stuff on it)
+            if (hit && hit.transform.GetComponent<Creatable>())
             {
-                createPosition = hit.point;
-                createDir = hit.normal;
+
+                //Set Information for Creators
+                goalPosition = hit.point;
+                this.dir = hit.normal;
                 canCreate = true;
-                createCollider = hit.collider;
+
+                //Unselect old selection
+                Creatable newCreatable = hit.transform.GetComponent<Creatable>();
+                if (creatable && creatable != newCreatable)
+                {
+                    creatable.UnSelect();
+                    //position = goalPosition;
+                }
+                creatable = newCreatable;
+                creatable.Select(position, player.color);
+
+                //Happy with first creatable.
                 return;
             }
         }
+        //Couldn't find any creatable
         canCreate = false;
+        //Unselect creatable
+        if (creatable)
+        {
+            creatable.UnSelect();
+            creatable = null;
+        }
     }
 
     public static Vector2 RotateVector(Vector2 v, float degrees)
@@ -105,7 +138,7 @@ public class Create : MonoBehaviour
         Gizmos.color = color;
         Gizmos.DrawWireSphere(transform.position, createRadius);
         if (canCreate)
-            Gizmos.DrawRay(createPosition, createDir);
+            Gizmos.DrawRay(position, dir);
             
     }
 }

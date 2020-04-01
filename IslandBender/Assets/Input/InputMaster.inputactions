@@ -70,6 +70,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "JumpBoulder",
+                    "type": "Button",
+                    "id": "e25027b5-cef1-4cb0-8b00-9ae1e30277b0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Break",
                     "type": "Button",
                     "id": "84f4c8ba-6039-4f63-a25f-eb5e56d0b77d",
@@ -315,6 +323,17 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Redirect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5241da7a-560a-4a9a-9684-9328d430a028",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "JumpBoulder",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

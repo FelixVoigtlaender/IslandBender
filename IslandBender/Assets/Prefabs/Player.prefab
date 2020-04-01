@@ -20,6 +20,10 @@ GameObject:
   - component: {fileID: 1761450676}
   - component: {fileID: 1761450685}
   - component: {fileID: 1761450686}
+  - component: {fileID: 934509105}
+  - component: {fileID: 934509106}
+  - component: {fileID: 934509118}
+  - component: {fileID: 934509119}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -275,9 +279,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5f517819c63df5438f0513b58903adc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 5
+  radius: 10
   layerMask:
     serializedVersion: 2
     m_Bits: 1280
   isManipulating: 0
   manipulateables: []
+--- !u!114 &934509105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832123106838563029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 644915f2df28db846a9aa5ba39bb402d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxMass: 1.5
+--- !u!114 &934509106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832123106838563029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2b90d12cc1c5f4395b7673e97a8e1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpHeight: 5
+  boulderPrefab: {fileID: 4364537411822246461, guid: e74ef5e6030d9974fb1c7248e3f880e0,
+    type: 3}
+--- !u!114 &934509118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832123106838563029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38f09071ddd5faf4480785b00022a0b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxMass: 2.5
+  launchSpeed: 50
+--- !u!114 &934509119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832123106838563029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e1b327e2fd008d449edfc23f91867f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpHeight: 8
+  boulderPrefab: {fileID: 4364537411822246461, guid: e74ef5e6030d9974fb1c7248e3f880e0,
+    type: 3}

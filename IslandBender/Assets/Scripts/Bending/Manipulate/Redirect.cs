@@ -6,7 +6,7 @@ public class Redirect : Manipulator
 {
     public float maxMass = 2.5f;
     public float launchSpeed = 20;
-    Rigidbody2D selection;
+    Manipulable selection;
 
     private void Start()
     {
@@ -28,7 +28,7 @@ public class Redirect : Manipulator
         }
 
         Vector2 myPos = transform.position;
-        Vector2 selPos = selection.position;
+        Vector2 selPos = selection.rigid.position;
 
         //If out of reach... Let go
         float distance = Vector2.Distance(myPos,selPos);
@@ -40,7 +40,7 @@ public class Redirect : Manipulator
 
         // Check if its getting closer or further?
         Vector2 nextMyPos = myPos + player.myRigid.velocity * Time.deltaTime;
-        Vector2 nextSelPos = selPos + selection.velocity * Time.deltaTime;
+        Vector2 nextSelPos = selPos + selection.rigid.velocity * Time.deltaTime;
         float nextdistance = Vector2.Distance(nextMyPos,nextSelPos);
         // If getting closer, do nothing
         if (nextdistance < distance)
@@ -49,13 +49,13 @@ public class Redirect : Manipulator
         //Redirect
         Vector2 dir = (selPos - myPos).normalized;
         Vector2 tangent = Vector2.Perpendicular(dir).normalized;
-        Vector2 velocity = selection.velocity;
+        Vector2 velocity = selection.rigid.velocity;
         float tangentDir = Mathf.Sign(Vector2.Dot(tangent, velocity));
 
         velocity = tangent * tangentDir * velocity.magnitude;
-        selection.velocity = velocity;
+        selection.rigid.velocity = velocity;
 
-        Debug.DrawRay(selection.position, velocity);
+        Debug.DrawRay(selection.rigid.position, velocity);
 
 
     }
@@ -67,20 +67,19 @@ public class Redirect : Manipulator
             return;
         
         Vector2 dir = player.lastPotentAim;
-        Rigidbody2D otherRigid = manipulate.FindManipulateable(dir, maxMass);
-        selection = otherRigid;
+        selection = manipulate.FindManipulateable(dir, maxMass);
     }
     public void Cancel()
     {
         if (!selection)
             return;
 
-        Vector2 velocity = selection.velocity;
+        Vector2 velocity = selection.rigid.velocity;
         if (velocity.magnitude < launchSpeed)
             velocity = velocity.normalized * launchSpeed;
-        selection.velocity = velocity;
+        selection.rigid.velocity = velocity;
         
-        EffectManager.CreateRockHitEffect(selection.position, velocity.normalized);
+        EffectManager.CreateRockHitEffect(selection.rigid.position, velocity.normalized);
 
         selection = null;
 

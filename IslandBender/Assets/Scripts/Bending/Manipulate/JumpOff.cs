@@ -22,10 +22,12 @@ public class JumpOff : Manipulator
             return;
 
         Vector2 dir = player.myRigid.velocity.normalized;
-        Rigidbody2D otherRigid = manipulate.FindManipulateable(dir);
+        Manipulable manipulable = manipulate.FindManipulateable(dir);
 
-        if (!otherRigid)
+        if (!manipulable)
             return;
+
+        Rigidbody2D otherRigid = manipulable.rigid;
 
         Vector2 aim = player.lastPotentAim.normalized;
         Vector2 deltaVel = aim * jumpSpeed;

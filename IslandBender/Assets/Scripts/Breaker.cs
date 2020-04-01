@@ -35,7 +35,6 @@ public class Breaker : MonoBehaviour
         }
         if (myMass <= otherMass)
         {
-            print("myMass:" + myMass + " otherMass:" + otherMass);
             Break();
         }
     }

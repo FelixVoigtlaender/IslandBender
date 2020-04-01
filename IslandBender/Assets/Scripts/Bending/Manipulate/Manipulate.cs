@@ -13,7 +13,7 @@ public class Manipulate : MonoBehaviour
 
     PlayerController player;
 
-    public Rigidbody2D[] manipulateables;
+    public Manipulable[] manipulables;
     // Manager for all actions for Creation
     private void Start()
     {
@@ -27,63 +27,74 @@ public class Manipulate : MonoBehaviour
 
     private void FixedUpdate()
     {
-        manipulateables = FindManipulateables();
+        foreach (Manipulable m in manipulables)
+            m.UnSelect();
+
+        manipulables = FindManipulables();
+
+        foreach (Manipulable m in manipulables)
+            m.Select(player.color);
     }
 
-    //Finds all Manipulateables (Rigidbody2D) in its manipulateRadius.
-    public Rigidbody2D[] FindManipulateables()
+    //Finds all Manipulables (Rigidbody2D) in its manipulateRadius.
+    public Manipulable[] FindManipulables()
     {
         if (!isManipulating)
-            return new Rigidbody2D[0];
+            return new Manipulable[0];
 
-        List<Rigidbody2D> manipulateables = new List<Rigidbody2D>();
+        List<Manipulable> manipulables = new List<Manipulable>();
 
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, radius, layerMask);
         foreach(Collider2D c in colliders)
         {
             if (c.attachedRigidbody)
-                manipulateables.Add(c.attachedRigidbody);
+            {
+                Manipulable manipulable = c.GetComponent<Manipulable>();
+                if (manipulable)
+                    manipulables.Add(manipulable);
+            }
+                    
         }
 
-        return manipulateables.ToArray();
+        return manipulables.ToArray();
     }
 
-    //Finds closest manipulateable relative to an direction
-    public Rigidbody2D FindManipulateable(Vector2 dir, float maxMass = 1000)
+    //Finds closest manipulables relative to an direction
+    public Manipulable FindManipulateable(Vector2 dir, float maxMass = 1000)
     {
         if (!isManipulating)
             return null;
 
         Vector2 myPosition = (Vector2)transform.position + dir * radius;
 
-        Rigidbody2D closest = null;
+        Manipulable closest = null;
         float closestDistance = radius*2 + 10;
-        foreach (Rigidbody2D r in manipulateables)
+        foreach (Manipulable m in manipulables)
         {
-            float distance = ((Vector2)myPosition - r.position).magnitude;
-            distance += ((Vector2)transform.position - r.position).magnitude * 2;
-            if (distance < closestDistance && r.mass < maxMass)
+            float distance = ((Vector2)myPosition - m.rigid.position).magnitude;
+            distance += ((Vector2)transform.position - m.rigid.position).magnitude * 2;
+            if (distance < closestDistance && m.rigid.mass < maxMass)
             {
-                closest = r;
+                closest = m;
                 closestDistance = distance;
             }
         }
         return closest;
     }
 
-    public Rigidbody2D FindClosestManipulateable(float maxMass = 1000)
+    public Manipulable FindClosestManipulable(float maxMass = 1000)
     {
         if (!isManipulating)
             return null;
 
-        Rigidbody2D closest = null;
+        Manipulable closest = null;
         float closestDistance = radius+10;
-        foreach(Rigidbody2D r in manipulateables)
+        foreach(Manipulable m in manipulables)
         {
-            float distance = ((Vector2)transform.position - r.position).magnitude;
-            if(distance < closestDistance && r.mass < maxMass)
+            float distance = ((Vector2)transform.position - m.rigid.position).magnitude;
+            if(distance < closestDistance && m.rigid.mass < maxMass)
             {
-                closest = r;
+                closest = m;
                 closestDistance = distance;
             }
         }
@@ -95,10 +106,10 @@ public class Manipulate : MonoBehaviour
         Gizmos.color = color;
         Gizmos.DrawWireSphere(transform.position, radius);
 
-        if(manipulateables != null)
-            foreach (Rigidbody2D r in manipulateables)
-                if(r)
-                    Gizmos.DrawWireSphere(r.position, 1);
+        if(manipulables != null)
+            foreach (Manipulable m in manipulables)
+                if(m)
+                    Gizmos.DrawWireSphere(m.rigid.position, 1);
 
     }
 

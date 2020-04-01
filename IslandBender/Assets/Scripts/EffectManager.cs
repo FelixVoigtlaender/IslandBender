@@ -15,23 +15,22 @@ public class EffectManager : MonoBehaviour
 
     public static void CreateRockCreateEffect(Vector2 position, Vector2 dir)
     {
+        dir = dir.normalized;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         GameObject effectPrefab = instance.rockCreateEffectPrefabs[Random.Range(0, instance.rockCreateEffectPrefabs.Length - 1)];
 
-        GameObject effect = Instantiate(effectPrefab, position, Quaternion.Euler(0, 0, 0));
-
-        effect.GetComponent<ParticleSystem>().startRotation = angle -90;
+        GameObject effect = Instantiate(effectPrefab, position, Quaternion.Euler(0, 0, angle - 90));
+;
 
     }
 
     public static void CreateRockHitEffect(Vector2 position, Vector2 dir)
     {
         dir = dir.normalized;
-        float angle = Mathf.Atan2(-dir.y, dir.x) ;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         GameObject effectPrefab = instance.rockHitEffectPrefabs[Random.Range(0, instance.rockHitEffectPrefabs.Length - 1)];
 
-        GameObject effect = Instantiate(effectPrefab, position, Quaternion.Euler(0, 0, 0));
-        effect.GetComponent<ParticleSystem>().startRotation = angle;
+        GameObject effect = Instantiate(effectPrefab, position, Quaternion.Euler(0, 0, angle));
 
     }
 

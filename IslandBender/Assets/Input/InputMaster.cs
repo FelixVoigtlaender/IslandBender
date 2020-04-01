@@ -83,6 +83,14 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
+                    ""name"": ""JumpBoulder"",
+                    ""type"": ""Button"",
+                    ""id"": ""e25027b5-cef1-4cb0-8b00-9ae1e30277b0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
                     ""name"": ""Break"",
                     ""type"": ""Button"",
                     ""id"": ""84f4c8ba-6039-4f63-a25f-eb5e56d0b77d"",
@@ -330,6 +338,17 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""action"": ""Redirect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5241da7a-560a-4a9a-9684-9328d430a028"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""JumpBoulder"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -369,6 +388,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_Player_Rock = m_Player.FindAction("Rock", throwIfNotFound: true);
         m_Player_Hit = m_Player.FindAction("Hit", throwIfNotFound: true);
         m_Player_Boulder = m_Player.FindAction("Boulder", throwIfNotFound: true);
+        m_Player_JumpBoulder = m_Player.FindAction("JumpBoulder", throwIfNotFound: true);
         m_Player_Break = m_Player.FindAction("Break", throwIfNotFound: true);
         m_Player_Redirect = m_Player.FindAction("Redirect", throwIfNotFound: true);
     }
@@ -428,6 +448,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Rock;
     private readonly InputAction m_Player_Hit;
     private readonly InputAction m_Player_Boulder;
+    private readonly InputAction m_Player_JumpBoulder;
     private readonly InputAction m_Player_Break;
     private readonly InputAction m_Player_Redirect;
     public struct PlayerActions
@@ -442,6 +463,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         public InputAction @Rock => m_Wrapper.m_Player_Rock;
         public InputAction @Hit => m_Wrapper.m_Player_Hit;
         public InputAction @Boulder => m_Wrapper.m_Player_Boulder;
+        public InputAction @JumpBoulder => m_Wrapper.m_Player_JumpBoulder;
         public InputAction @Break => m_Wrapper.m_Player_Break;
         public InputAction @Redirect => m_Wrapper.m_Player_Redirect;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -477,6 +499,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @Boulder.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBoulder;
                 @Boulder.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBoulder;
                 @Boulder.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBoulder;
+                @JumpBoulder.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJumpBoulder;
+                @JumpBoulder.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJumpBoulder;
+                @JumpBoulder.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJumpBoulder;
                 @Break.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBreak;
                 @Break.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBreak;
                 @Break.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBreak;
@@ -511,6 +536,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @Boulder.started += instance.OnBoulder;
                 @Boulder.performed += instance.OnBoulder;
                 @Boulder.canceled += instance.OnBoulder;
+                @JumpBoulder.started += instance.OnJumpBoulder;
+                @JumpBoulder.performed += instance.OnJumpBoulder;
+                @JumpBoulder.canceled += instance.OnJumpBoulder;
                 @Break.started += instance.OnBreak;
                 @Break.performed += instance.OnBreak;
                 @Break.canceled += instance.OnBreak;
@@ -549,6 +577,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnRock(InputAction.CallbackContext context);
         void OnHit(InputAction.CallbackContext context);
         void OnBoulder(InputAction.CallbackContext context);
+        void OnJumpBoulder(InputAction.CallbackContext context);
         void OnBreak(InputAction.CallbackContext context);
         void OnRedirect(InputAction.CallbackContext context);
     }
