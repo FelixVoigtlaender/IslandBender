@@ -59,7 +59,8 @@ public class Boulder : MonoBehaviour
 
     public void Hit()
     {
-        Physics2D.IgnoreCollision(originateCollider, GetComponent<Collider2D>(), false);
+        if(originateCollider)
+            Physics2D.IgnoreCollision(originateCollider, GetComponent<Collider2D>(), false);
         if (transform.parent)
             transform.parent = null;
         rigidbody.bodyType = RigidbodyType2D.Dynamic;

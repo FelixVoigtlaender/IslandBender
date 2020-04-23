@@ -17,7 +17,7 @@ public class Creator : MonoBehaviour
 
     public virtual void TryPerform()
     {
-        if (create.canCreate)
+        if (create.canCreate && create.creatable)
             Perform();
     }
 

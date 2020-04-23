@@ -112,8 +112,6 @@ public class OutlineGenerator : MonoBehaviour
 
         // Create first line
         LineRenderer line = Instantiate(linePrefab.gameObject, parent).GetComponent<LineRenderer>();
-        //line.transform.parent = parent;
-        print(line.transform.parent.name);
 
         // This vector3 gets added to each line position, so it sits in front of the mesh
         // Change the -0.1f to a positive number and it will sit behind the mesh

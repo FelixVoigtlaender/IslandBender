@@ -241,5 +241,39 @@ public class RaycastController : MonoBehaviour
             above = below = false;
             left = right = false;
         }
+        public string GetInformation()
+        {
+            string s = "";
+            //Top
+            s += topEdges[0] ? "\\" : "  ";
+            for(int i = 0; i < topWhiskers.Length; i++)
+            {
+                s += topWhiskers[i] ? "|" : " ";
+            }
+            s += topEdges[1] ? "/" : "  ";
+            s += "\n";
+
+            //Middle
+            for (int i = 0; i < leftWhiskers.Length; i++)
+            {
+                s += leftWhiskers[i] ? "--" : "  ";
+                for (int n = 0; n < topWhiskers.Length; n++)
+                {
+                    s += " ";
+                }
+                s += rightWhiskers[i] ? "--" : "  ";
+                s += "\n";
+            }
+
+            //Bottom
+            s += bottomEdges[0] ? "/" : "  ";
+            for (int i = 0; i < topWhiskers.Length; i++)
+            {
+                s += topWhiskers[i] ? "|" : " ";
+            }
+            s += topEdges[1] ? "\\" : "  ";
+
+            return s;
+        }
     }
 }

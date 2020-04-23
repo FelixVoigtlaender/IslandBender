@@ -5,8 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(Controller2D))]
 public class PlayerController : MonoBehaviour
 {
+    public static Color debugColor = Color.blue;
     [HideInInspector]
-    public Color color;
+    public Color color = Color.black;
 
     [Header("Input")]
     public float deadZone = 0.2f;
@@ -62,10 +63,12 @@ public class PlayerController : MonoBehaviour
             lastPotentAim = aim;
 
         //Don't move once bending
-        Vector2 movInput = isBending ? Vector2.zero : mov;
+        //Vector2 movInput = isBending ? Vector2.zero : mov;
 
-        Move(movInput);
+        Move(mov);
 
+        //Test
+        DebugExtension.DrawShape(ShapeExtension.CreateCirclePoints(transform.position, 2.5f, 20));
 
     }
     public void Move(Vector2 input)

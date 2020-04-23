@@ -107,12 +107,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 777ed691fffb0bb479e9d9d4217904eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  color: {r: 0, g: 0, b: 0, a: 0}
   deadZone: 0.2
   lastPotentAim: {x: 0, y: 0}
   aim: {x: 0, y: 0}
   mov: {x: 0, y: 0}
   myRigid: {fileID: 0}
   controller: {fileID: 0}
+  create: {fileID: 0}
+  manipulate: {fileID: 0}
 --- !u!50 &832123106838563032
 Rigidbody2D:
   serializedVersion: 4
@@ -180,8 +183,8 @@ MonoBehaviour:
   horizontalRaySpacing: 0
   verticalRaySpacing: 0
   collider: {fileID: 0}
-  maxJumpHeight: 4
-  minJumpHeight: 1
+  maxJumpHeight: 6
+  minJumpHeight: 3
   timeToJumpApex: 0.4
   wallJumpClimb: {x: 7.5, y: 16}
   wallJumpOff: {x: 8.5, y: 7}
@@ -225,9 +228,11 @@ MonoBehaviour:
     m_Bits: 1280
   isCreating: 0
   canCreate: 0
-  createPosition: {x: 0, y: 0}
-  createDir: {x: 0, y: 0}
-  createCollider: {fileID: 0}
+  position: {x: 0, y: 0}
+  goalPosition: {x: 0, y: 0}
+  dir: {x: 0, y: 0}
+  smoothVelocity: {x: 0, y: 0}
+  creatable: {fileID: 0}
 --- !u!114 &388228690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,7 +289,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1280
   isManipulating: 0
-  manipulateables: []
+  manipulables: []
 --- !u!114 &934509105
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,7 +315,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f2b90d12cc1c5f4395b7673e97a8e1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpHeight: 5
+  jumpHeight: 10
   boulderPrefab: {fileID: 4364537411822246461, guid: e74ef5e6030d9974fb1c7248e3f880e0,
     type: 3}
 --- !u!114 &934509118

@@ -14,9 +14,7 @@ public class CreateBoulder : Creator
 
     void Start()
     {
-
-        float gravity = -Physics2D.gravity.y;
-        speed = Mathf.Sqrt(2 * Mathf.Abs(gravity) * jumpHeight);
+        speed = Controller2D.GetJumpSpeed(jumpHeight);
 
         player.controls.Player.Boulder.performed += ctx => TryPerform();
     }
@@ -25,11 +23,11 @@ public class CreateBoulder : Creator
     {
 
         //Angle
-        var dir = create.dir;
+        var dir = create.spawnDir;
         var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90;
 
         //Create
-        GameObject boulderObj = Instantiate(boulderPrefab, create.position, Quaternion.Euler(0, 0, angle));
+        GameObject boulderObj = Instantiate(boulderPrefab, create.spawnPosition, Quaternion.Euler(0, 0, angle));
         Boulder boulder = boulderObj.GetComponent<Boulder>();
         boulder.speed = speed;
         boulder.Setup(create.creatable.collider,dir);
@@ -37,5 +35,21 @@ public class CreateBoulder : Creator
         //Effects
         //EffectManager.CreateBoulderCreateEffect(create.createPosition, Vector2.up);
         CameraController.Shake(0.5f);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        //Darker Green
+        Gizmos.color = Color.Lerp(Create.debugColor, Color.black,0.3f);
+        Vector2 spawnPos = (Vector2)transform.position + Create.debugOffset * 2;
+
+        //Trail
+        Gizmos.DrawLine(spawnPos, spawnPos + Vector2.up * jumpHeight);
+        //Boulder
+        Gizmos.DrawWireCube(spawnPos + Vector2.up * (1f), new Vector3(1, 2, 1));
+        //Player
+        Gizmos.color = PlayerController.debugColor;
+        Gizmos.DrawWireCube(spawnPos + Vector2.up * (jumpHeight + 0.5f), new Vector3(1, 1, 1));
+
     }
 }

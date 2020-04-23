@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Create : MonoBehaviour
 {
-    Color color = Color.green;
+    public static Color debugColor = Color.green;
+    public static Vector2 debugOffset = Vector2.left;
+
     public float createRadius = 3;
     public LayerMask createLayer;
     public bool isCreating;
@@ -12,7 +14,9 @@ public class Create : MonoBehaviour
 
     PlayerController player;
     [HideInInspector]
-    public Vector2 position, goalPosition, dir, smoothVelocity;
+    public Vector2 spawnDir;
+    public Vector2 spawnPosition, spawnGoalPosition;
+    Vector2 smoothVelocity;
     public Creatable creatable;
     
     // Manager for all actions for Creation
@@ -32,7 +36,7 @@ public class Create : MonoBehaviour
             creatable = null;
         }
 
-        position = Vector2.SmoothDamp(position, goalPosition, ref smoothVelocity, 0.1f);
+        spawnPosition = Vector2.SmoothDamp(spawnPosition, spawnGoalPosition, ref smoothVelocity, 0.1f);
     }
 
     private void FixedUpdate()
@@ -40,7 +44,7 @@ public class Create : MonoBehaviour
         if (isCreating)
             Creating(player.lastPotentAim);
 
-        canCreate = (position - (Vector2)transform.position).magnitude < createRadius + 0.1f && isCreating;
+        canCreate = (spawnPosition - (Vector2)transform.position).magnitude < createRadius + 0.1f && isCreating;
     }
 
     public void Creating(Vector2 input)
@@ -56,8 +60,8 @@ public class Create : MonoBehaviour
         {
             //right 
             float angle = deltaAngle * i;
-            Vector2 dir = RotateVector(rod, angle);
-            Vector2 nextDir = RotateVector(rod, angle + deltaAngle);
+            Vector2 dir = rod.Rotate(angle);
+            Vector2 nextDir = rod.Rotate(angle + deltaAngle);
             Vector3 orthDir = nextDir - dir;
 
             hit = Physics2D.Raycast((Vector2)transform.position , dir, dir.magnitude, createLayer);
@@ -65,15 +69,15 @@ public class Create : MonoBehaviour
             if (!hit)
             {
                 hit = Physics2D.Raycast((Vector2)transform.position + dir, orthDir, orthDir.magnitude, createLayer);
-                //Debug.DrawRay((Vector2)transform.position + dir, orthDir);
+                Debug.DrawRay((Vector2)transform.position + dir, orthDir);
             }
 
             //right
             if (!hit)
             {
                 angle = -deltaAngle * i;
-                dir = RotateVector(rod, angle);
-                nextDir = RotateVector(rod, angle - deltaAngle);
+                dir = rod.Rotate(angle);
+                nextDir = rod.Rotate(angle - deltaAngle);
                 orthDir = nextDir - dir;
 
                 hit = Physics2D.Raycast((Vector2)transform.position, dir, dir.magnitude, createLayer);
@@ -81,7 +85,7 @@ public class Create : MonoBehaviour
                 if (!hit)
                 {
                     hit = Physics2D.Raycast((Vector2)transform.position + dir, orthDir, orthDir.magnitude, createLayer);
-                    //Debug.DrawRay((Vector2)transform.position + dir, orthDir);
+                    Debug.DrawRay((Vector2)transform.position + dir, orthDir);
                 }
             }
             // Impossible to spawn rigids on dynamic rigids...
@@ -91,21 +95,22 @@ public class Create : MonoBehaviour
             //Found hit and its a creatable (Can spawn stuff on it)
             if (hit && hit.transform.GetComponent<Creatable>())
             {
-
                 //Set Information for Creators
-                goalPosition = hit.point;
-                this.dir = hit.normal;
+                spawnGoalPosition = hit.point;
+                this.spawnDir = hit.normal;
                 canCreate = true;
 
                 //Unselect old selection
                 Creatable newCreatable = hit.transform.GetComponent<Creatable>();
-                if (creatable && creatable != newCreatable)
+                if (creatable != newCreatable)
                 {
-                    creatable.UnSelect();
-                    //position = goalPosition;
+                    spawnPosition = spawnGoalPosition;
+                    if (creatable)
+                        creatable.UnSelect();
                 }
+                //Select creatable
                 creatable = newCreatable;
-                creatable.Select(position, player.color);
+                creatable.Select(spawnPosition, player.color);
 
                 //Happy with first creatable.
                 return;
@@ -121,24 +126,12 @@ public class Create : MonoBehaviour
         }
     }
 
-    public static Vector2 RotateVector(Vector2 v, float degrees)
-    {
-        float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
-        float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
-
-        float tx = v.x;
-        float ty = v.y;
-        v.x = (cos * tx) - (sin * ty);
-        v.y = (sin * tx) + (cos * ty);
-        return v;
-    }
-
     private void OnDrawGizmos()
     {
-        Gizmos.color = color;
+        Gizmos.color = debugColor;
         Gizmos.DrawWireSphere(transform.position, createRadius);
         if (canCreate)
-            Gizmos.DrawRay(position, dir);
+            Gizmos.DrawRay(spawnPosition, spawnDir);
             
     }
 }

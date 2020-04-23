@@ -5,7 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerController))]
 public class Manipulate : MonoBehaviour
 {
-    Color color = Color.red;
+    public static Color debugColor = Color.cyan;
+    public static Vector2 debugOffset = Vector2.right;
+
     public float radius = 5;
 
     public LayerMask layerMask;
@@ -33,7 +35,7 @@ public class Manipulate : MonoBehaviour
         manipulables = FindManipulables();
 
         foreach (Manipulable m in manipulables)
-            m.Select(player.color);
+            m.Select(PlayerController.debugColor);
     }
 
     //Finds all Manipulables (Rigidbody2D) in its manipulateRadius.
@@ -101,15 +103,15 @@ public class Manipulate : MonoBehaviour
         return closest;
     }
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
-        Gizmos.color = color;
+        Gizmos.color = Manipulate.debugColor;
         Gizmos.DrawWireSphere(transform.position, radius);
 
         if(manipulables != null)
             foreach (Manipulable m in manipulables)
                 if(m)
-                    Gizmos.DrawWireSphere(m.rigid.position, 1);
+                    Gizmos.DrawWireSphere(m.rigid.position, 0.1f);
 
     }
 

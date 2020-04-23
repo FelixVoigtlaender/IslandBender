@@ -10,12 +10,11 @@ public class JumpOff : Manipulator
 
     private void Start()
     {
-        float gravity = -Physics2D.gravity.y;
-        jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(gravity) * jumpHeight);
+        jumpSpeed = Controller2D.GetJumpSpeed(jumpHeight);   
 
         player.controls.Player.Jump.performed += ctx => TryPerform();
     }
-
+    
     public override void Perform()
     {
         if (!manipulate.isManipulating)
@@ -37,5 +36,26 @@ public class JumpOff : Manipulator
 
         EffectManager.CreateRockHitEffect(transform.position, deltaVel);
         EffectManager.CreateRockHitEffect(otherRigid.position, -deltaVel);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.Lerp(Manipulate.debugColor, Color.black, 0.3f);
+
+        Vector2 start = (Vector2)transform.position + Manipulate.debugOffset * 2f;
+        Vector2 velocity = Controller2D.GetJumpSpeed(jumpHeight) * Vector2.up + Manipulate.debugOffset * 2f;
+        Vector2 end = GizmosExtension.DrawParabel(start, velocity, Physics2D.gravity.y);
+
+        //Block
+        Vector2 startBlock = start - velocity.normalized * 2;
+        Gizmos.DrawLine(startBlock, startBlock - velocity);
+        Gizmos.DrawWireCube(startBlock, Vector3.one);
+        //Player
+        Gizmos.color = PlayerController.debugColor;
+        //Player start
+        Gizmos.DrawWireCube(start, Vector3.one);
+        //Player end
+        Gizmos.DrawWireCube(end, Vector3.one);
+
     }
 }

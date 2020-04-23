@@ -50,6 +50,7 @@ public class CameraController : MonoBehaviour {
     {
         instance = this;
         mainCamera = Camera.main;
+        goalSize = mainCamera.orthographicSize;
         //newSize = newSize >= minimumSize ? newSize : minimumSize;
 
         currentColor = mainCamera.backgroundColor;
